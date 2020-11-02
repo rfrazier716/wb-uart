@@ -11,19 +11,26 @@ module uart_tx#(
     input wire [DATA_BITS-1:0] i_data, // the data that will be latched and transmitted
     input wire i_write, //input signal to request a data write out 
     output wire o_busy, //signal that gets asserted when the state machine is running
-    output wire o_tx_w
+    output reg o_tx_w
 );
     reg[DATA_BITS-1:0] data_r; // data register to be transmitted
+    reg[DATA_BITS-1:0] data_mask_r; //a mask that controls which data bit is transmitted 
     initial data_r = 0; // initialize the data register to be zero
+    initial data_mask_r = 8'h01; //transmit the LSB first
 
     //State machine registers and paramters
-    parameter ST_IDLE =3'b000; //The system is idling and not driving any data
-    parameter ST_INIT = 3'b001;
-    parameter ST_TRANSMIT = 3'b010;
+    parameter ST_IDLE =4'b0000; //The system is idling and not driving any data
+    parameter ST_INIT = 4'b0001; //setup for transmition, Drive the line low
+    parameter ST_TRANSMIT = 4'b0010; //Transmit data, this state is used for all 8 bits
+    parameter ST_PARITY = 4'b0011; //Parity bit, is an XOR of the data register for even parity
+    parameter ST_END = 4'b0100; // End Transmissin, turn clock high
 
-    reg [2:0] system_state_r;
+    reg [3:0] system_state_r;
+    reg [3:0] next_state_r;
     wire state_transition_w; //register to signal a state transition, goes high when counter == CYCLES_PER_BIT -1 for once clock
     initial system_state_r = ST_IDLE;
+    initial next_state_r = ST_IDLE;
+
 
 
     reg [7:0] baud_counter_r; //counter to trigger state machine 
@@ -31,16 +38,36 @@ module uart_tx#(
 
     //State Machine to drive the UART transmitter
     always@(posedge i_clk) begin
+
+        //If we get a write request and are not currently processing a request, kick off state machine
         if((i_write == 1'b1) && !o_busy) begin
-            //If we get a write request and are not currently processing a request, kick off state machine
             data_r<=i_data; //Latch the input data wire to the internal data wire
             system_state_r <= ST_INIT; //advance to the next state
         end
 
-        // All states but idle can only transition on 
-        // unless we're idling, only advance states when the state_transition wire is driven high
         case(system_state_r)
-        
+            ST_IDLE: begin
+                o_tx_w <= 1; // When idling the output line should be driven high
+                next_state_r <= ST_IDLE; //
+            end
+            ST_INIT: begin
+                o_tx_w <= 0; //During initialization drive the output low
+                data_mask_r <= 8'h01;
+                next_state_r <= ST_TRANSMIT;
+            end
+            ST_TRANSMIT: begin
+                o_tx_w <= |(data_r & data_mask_r); // 
+                next_state_r <= ST_PARITY;
+            end
+            ST_PARITY:  begin
+                o_tx_w <= ^data_r; //Transmit even parity
+                next_state_r <= ST_END;
+            end
+            ST_END: begin
+                o_tx_w <= 1;
+                next_state_r <= ST_IDLE;
+            end
+            default: o_tx_w <= 1; //Default case should drive the tx wire high
         endcase
     end
 
