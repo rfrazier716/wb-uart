@@ -14,21 +14,26 @@ module uart_tx#(
     output reg o_tx_w
 );
     reg[DATA_BITS-1:0] data_r; // data register to be transmitted
-    reg[DATA_BITS-1:0] data_mask_r; //a mask that controls which data bit is transmitted 
     initial data_r = 0; // initialize the data register to be zero
     initial data_mask_r = 8'h01; //transmit the LSB first
 
     //State machine registers and paramters
-    parameter ST_IDLE =4'b0000; //The system is idling and not driving any data
-    parameter ST_INIT = 4'b0001; //setup for transmition, Drive the line low
-    parameter ST_TRANSMIT = 4'b0010; //Transmit data, this state is used for all 8 bits
-    parameter ST_PARITY = 4'b0011; //Parity bit, is an XOR of the data register for even parity
-    parameter ST_END = 4'b0100; // End Transmissin, turn clock high
+    parameter ST_TRANSMIT_B0 = 4'b0000; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B1 = 4'b0001; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B2 = 4'b0010; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B3 = 4'b0011; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B4 = 4'b0100; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B5 = 4'b0101; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B6 = 4'b0110; //Transmit data, this state is used for all 8 bits
+    parameter ST_TRANSMIT_B7 = 4'b0111; //Transmit data, this state is used for all 8 bits
+    parameter ST_PARITY = 4'b1000; //Parity bit, is an XOR of the data register for even parity
+    parameter ST_STOP = 4'b 1001;
+    parameter ST_IDLE = 4'b1010;
+    parameter ST_INIT = 4'b1011;
 
     reg [3:0] system_state_r;
     reg [3:0] next_state_r;
     wire state_transition_w; //register to signal a state transition, goes high when counter == CYCLES_PER_BIT -1 for once clock
-    initial system_state_r = ST_IDLE;
     initial next_state_r = ST_IDLE;
 
 
@@ -52,22 +57,25 @@ module uart_tx#(
             end
             ST_INIT: begin
                 o_tx_w <= 0; //During initialization drive the output low
-                data_mask_r <= 8'h01;
-                next_state_r <= ST_TRANSMIT;
             end
-            ST_TRANSMIT: begin
-                o_tx_w <= |(data_r & data_mask_r); // 
-                next_state_r <= ST_PARITY;
+            ST_TRANSMIT_B7: begin
+                //When Transmitting the 7th bit, the next transmission should be to the parity bit
+                o_tx_w <= data_r[system_state_r[2:0]];
+                next_state_r <= ST_STOP;
             end
             ST_PARITY:  begin
                 o_tx_w <= ^data_r; //Transmit even parity
-                next_state_r <= ST_END;
+                next_state_r <= ST_STOP;
             end
-            ST_END: begin
-                o_tx_w <= 1;
+            ST_STOP: begin
+                o_tx_w <= 1; //output a high stop bit
                 next_state_r <= ST_IDLE;
             end
-            default: o_tx_w <= 1; //Default case should drive the tx wire high
+            default: begin
+                //in the default case we're transmitting data
+                o_tx_w <= data_r[system_state_r[2:0]];
+                next_state_r <= system_state_r+1;
+            end
         endcase
     end
 
