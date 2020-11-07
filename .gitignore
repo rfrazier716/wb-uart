@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Build Directory 
+/build/
+
+# VSCode project settings
+/.vscode
+
+# Verilator Generated Object Files
+/verilator/obj_dir/*
