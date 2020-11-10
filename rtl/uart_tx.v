@@ -4,7 +4,7 @@ module uart_tx#(
     parameter CLOCK_RATE = 50000000, // System Clock frequency
     parameter BAUD_RATE = 9600, // the Baud Rate of the system
     parameter DATA_BITS = 8,  // How many data bits there are per cycle 
-    parameter CYCLES_PER_BIT = (CLOCK_RATE / BAUD_RATE) -1// How many clock ticks in before each data bit
+    parameter CYCLES_PER_BIT = (CLOCK_RATE / BAUD_RATE)// How many clock ticks in before each data bit
 )
 (
     input wire i_clk, //System Clock
@@ -36,6 +36,7 @@ module uart_tx#(
     wire state_transition_w; //register to signal a state transition, goes high when counter == CYCLES_PER_BIT -1 for once clock
     initial system_state_r = ST_IDLE;
     initial next_state_r = ST_IDLE;
+    initial o_tx_w = 1; //By default initialize wire to high
 
 
 
@@ -99,28 +100,34 @@ module uart_tx#(
     // Timing generation for state machine
     always@(posedge i_clk) begin
         if(system_state_r == ST_IDLE)
-            baud_counter_r <= 0; //Don't increment counter when idling
+            baud_counter_r <= CYCLES_PER_BIT[7:0]-1; //Don't increment counter when idling
         else begin
-            if(baud_counter_r != CYCLES_PER_BIT[7:0])
-                baud_counter_r <= baud_counter_r + 1; //Increment the counter
+            if(baud_counter_r != 0)
+                baud_counter_r <= baud_counter_r - 1; //Decrement the counter
             else
-                baud_counter_r <= 0; // reset the counter on when the necessary clock cycles have passed
+                baud_counter_r <= CYCLES_PER_BIT[7:0]-1; // reset the counter on when the necessary clock cycles have passed
         end
     end
 
     assign o_busy = system_state_r == ST_IDLE? 0:1; //the busy wire should be driven high whenever we're not in the idle state
-    assign state_transition_w = baud_counter_r == CYCLES_PER_BIT[7:0] ? 1:0; // wire for triggering state transition
+    assign state_transition_w = baud_counter_r == 0 ? 1:0; // wire for triggering state transition
 
 
-// Formal Verification Block
+// Formal Verification Block -- maybe delete? 
 `ifdef FORMAL
+    always@(*)
+        assume(reset!=0)
     always@(*) 
         assert(o_busy != (system_state_r==ST_IDLE)); //We should never be busy while idling
     
     //Verifying invalid states are never accessed
     always@(*) begin
         assert(system_state_r <= ST_IDLE); //Idle is the highest state, and the state register should never exceed it
-        assert(system_state_r != ST_DEADZONE); //This makes sure that the state incrementer 
+        assert(system_state_r != ST_DEADZONE); //This makes sure that the state incrementer
+
+        // when transmiting data the states should always increment by one
+        if(system_state_r >ST_TRANSMIT_B0 && system_state_r <= ST_TRANSMIT_B7)
+            assert(system_state_r == $past(system_state_r,1)+1)
     end
 `endif
 
