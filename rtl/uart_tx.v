@@ -61,7 +61,7 @@ module uart_tx#(
             ST_INIT: next_state_r <= ST_TRANSMIT_B0;
             ST_TRANSMIT_B7: next_state_r <= ST_STOP;
             ST_STOP: next_state_r <= ST_IDLE;
-            default: next_state_r <= next_state_r + 1; 
+            default: next_state_r <= system_state_r + 1; 
         endcase
     end
 
