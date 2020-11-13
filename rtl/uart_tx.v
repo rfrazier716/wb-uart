@@ -33,7 +33,6 @@ module uart_tx#(
 
     reg [3:0] system_state_r;
     reg [3:0] next_state_r;
-    wire state_transition_w; //register to signal a state transition, goes high when counter == CYCLES_PER_BIT -1 for once clock
     initial system_state_r = ST_IDLE;
     initial next_state_r = ST_IDLE;
     initial o_tx_w = 1; //By default initialize wire to high
@@ -46,8 +45,8 @@ module uart_tx#(
     //State Machine to drive the UART transmitter
     always@(posedge i_clk) begin
 
-        //If the state transition wire is high, switch to the next state
-        if(state_transition_w)
+        //If the counter has zero'd out, increment to the next state
+        if(baud_counter_r == 0)
             system_state_r <= next_state_r;
 
         //If we get a write request and are not currently processing a request, kick off state machine
@@ -91,25 +90,5 @@ module uart_tx#(
     end
 
     assign o_busy = system_state_r == ST_IDLE? 0:1; //the busy wire should be driven high whenever we're not in the idle state
-    assign state_transition_w = baud_counter_r == 0 ? 1:0; // wire for triggering state transition
-
-
-// Formal Verification Block -- maybe delete? 
-`ifdef FORMAL
-    always@(*)
-        assume(reset!=0)
-    always@(*) 
-        assert(o_busy != (system_state_r==ST_IDLE)); //We should never be busy while idling
     
-    //Verifying invalid states are never accessed
-    always@(*) begin
-        assert(system_state_r <= ST_IDLE); //Idle is the highest state, and the state register should never exceed it
-        assert(system_state_r != ST_DEADZONE); //This makes sure that the state incrementer
-
-        // when transmiting data the states should always increment by one
-        if(system_state_r >ST_TRANSMIT_B0 && system_state_r <= ST_TRANSMIT_B7)
-            assert(system_state_r == $past(system_state_r,1)+1)
-    end
-`endif
-
 endmodule
