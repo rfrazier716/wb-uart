@@ -41,7 +41,7 @@ module uart_tx#(
 
 
     reg [7:0] baud_counter_r; //counter to trigger state machine 
-    initial baud_counter_r = 0;
+    initial baud_counter_r = CYCLES_PER_BIT[7:0]-1;
 
     //State Machine to drive the UART transmitter
     always@(posedge i_clk) begin
@@ -58,52 +58,24 @@ module uart_tx#(
 
         case(system_state_r)
             // Whenever the part is not driving data it should be in the idle state, which drives the line high
-            ST_IDLE: begin
-               // o_tx_w <= 1;
-                next_state_r <= ST_IDLE;
-            end
-
-            //Initialization state - Drive the output low
-            ST_INIT: begin
-               // o_tx_w <= 0;
-                next_state_r <= ST_TRANSMIT_B0;
-            end
-
-            //When Transmitting the 7th bit, the next transmission should be to the stop bit
-            ST_TRANSMIT_B7: begin
-                //o_tx_w <= data_r[system_state_r[2:0]];
-                next_state_r <= ST_STOP;
-            end
-
-            // Parity bit is being skipped right now
-            ST_PARITY:  begin
-               // o_tx_w <= ^data_r; //Transmit even parity
-                next_state_r <= ST_STOP;
-            end
-
-            // Stop bit should hold the data line high for one clock cycle -- we might be able to skip this? 
-            ST_STOP: begin
-               // o_tx_w <= 1; 
-                next_state_r <= ST_IDLE;
-            end
-
-            // The default case is any of the transmitting states, in which case the respective data bit is transmitted
-            default: begin
-                //in the default case we're transmitting data
-                //o_tx_w <= data_r[system_state_r[2:0]];
-                next_state_r <= system_state_r+1;
-            end
+            ST_IDLE: next_state_r <= ST_IDLE;
+            ST_INIT: next_state_r <= ST_TRANSMIT_B0;
+            ST_TRANSMIT_B7: next_state_r <= ST_STOP;
+            ST_STOP: next_state_r <= ST_IDLE;
+            default: next_state_r <= next_state_r + 1; 
         endcase
     end
 
     //Output wire control
-    always@(*)
+    always@(*) begin
+        o_tx_w = 1; // to prevent a latch
         case(system_state_r)
             ST_IDLE: o_tx_w = 1;
             ST_INIT: o_tx_w = 0;
             ST_STOP: o_tx_w = 1;
             default: o_tx_w = data_r[system_state_r[2:0]];
         endcase
+    end
 
 
     // Timing generation for state machine
