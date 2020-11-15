@@ -39,3 +39,6 @@
 
 # Verilator Generated Object Files
 /verilator/obj_dir/*
+
+# Quartus Synthesis and Project Files
+/synth/
