@@ -9,16 +9,13 @@ module fifo#(
     input wire[FIFO_WIDTH-1:0] i_data_w, //input data wire
     output wire[FIFO_WIDTH-1:0] o_data_w, //output data wire
 
-    input wire i_read_w, //wire to trigger a read command
-    input wire i_write_w, //wire to trigger a write command
+    input wire i_read_w, //wire that advances the read head 1 step
+    input wire i_write_w, //wire that latches data and advances the write head 1 step
     input wire i_reset_w, //wire to trigger a reset
 
     output wire o_full_w, //wire raised when FIFO is full
     output wire o_empty_w //wire raised when FIFO is empty
 );
-    // Register that holds the most recently read fifo value
-    reg[FIFO_WIDTH-1:0] o_data_r;
-    initial o_data_r = 0;
     // FIFO memory
     reg [FIFO_WIDTH-1:0] fifo_buffer_r [(2**FIFO_DEPTH)-1:0];
 
@@ -39,21 +36,22 @@ module fifo#(
         end
         
         else begin
-            if (i_write_w && i_read_w)
             // if there's a write event, latch the data, and advance the write head if the buffer isn't full
-            if(i_write_w && !o_full_w) begin  
+            // Will also execute if there is a read event concurrently
+            if(i_write_w && (!o_full_w || i_read_w)) begin  
                 fifo_buffer_r[write_head_r] <= i_data_w; //latch data into buffer
                 write_head_r <= write_head_r + {{(FIFO_DEPTH-1){1'b0}},1'b1}; //Increment the write head
             end
-            // If there's a read event, put the furthest bythe on the output data wire
-            if(i_read_w && !o_empty_w) begin 
-                o_data_r <= fifo_buffer_r[read_head_r];
+
+            // If there's a read head advance request, output the current readhead data and advance the read head
+            // will also execute on a simultaneous RW event
+            if(i_read_w && (!o_empty_w || i_write_w)) begin 
                 read_head_r <= read_head_r + {{(FIFO_DEPTH-1){1'b0}},1'b1}; 
             end 
         end
     end
-
-    assign o_data_w = o_data_r; // The output data wire connects to the output data register
+    //TODO: What about when you initialize the code? what is this value?
+    assign o_data_w = fifo_buffer_r[read_head_r - 1]; // The output data wire connects to the previously read value
     assign o_empty_w = (write_head_r == read_head_r) ? 1'b1:0; // if the read head equals the write head the FIFO is full
     assign o_full_w = (write_head_r+ 1 == read_head_r) ? 1'b1:0; //if the write head is only ahead of the Fifo by one it's empty
 

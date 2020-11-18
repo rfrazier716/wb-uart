@@ -4,21 +4,16 @@
 
 if(${REBUILD_VERILATOR})
 
-    add_custom_command(OUTPUT ${VL_UART_TX}
+    add_custom_command(OUTPUT dummy_output
         COMMAND sh verilator_uart_tx.sh
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/"
-    )
-
-    add_custom_command(OUTPUT ${VL_FIFO}
         COMMAND sh verilator_fifo.sh
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/"
     )
-    
+
 endif()
 
 add_custom_target(vl_libs ALL
     COMMAND echo -e "Checking Verilator Libraries Exist"
     DEPENDS
-        ${VL_UART_TX}
-        ${VL_FIFO}
+        dummy_output
 )
