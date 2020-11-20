@@ -30,6 +30,7 @@ include_directories(
 
 ## Generates the verilator object files needed to run simulations and tests
 set(VL_UART_TX "${VL_OBJECT_DIR}/uart_tx/Vuart_tx__ALL.a")
+set(VL_UART_RX "${VL_OBJECT_DIR}/uart_rx/Vuart_rx__ALL.a")
 set(VL_FIFO "${VL_OBJECT_DIR}/fifo/Vfifo__ALL.a")
 
 # build the Verilator files

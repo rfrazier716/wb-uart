@@ -6,6 +6,7 @@ if(${REBUILD_VERILATOR})
 
     add_custom_command(OUTPUT dummy_output
         COMMAND sh verilator_uart_tx.sh
+        COMMAND sh verilator_uart_rx.sh
         COMMAND sh verilator_fifo.sh
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/"
     )
