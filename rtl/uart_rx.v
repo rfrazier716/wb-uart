@@ -1,10 +1,8 @@
 `default_nettype none //flags an error if you haven't defined a wire
 
 module uart_rx#(  
-    parameter CLOCK_RATE = 50000000, // System Clock frequency
-    parameter BAUD_RATE = 9600, // the Baud Rate of the system
     parameter DATA_BITS = 8,  // How many data bits there are per cycle 
-    parameter CYCLES_PER_BIT = (CLOCK_RATE / BAUD_RATE)// How many clock ticks in before each data bit
+    parameter CYCLES_PER_BIT = 108// How many clock ticks in before each data bit -- translates to 460.8kBaud on 50Mhz clock
 )
 (
     input wire i_clk, //System Clock
