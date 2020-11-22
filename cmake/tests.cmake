@@ -88,3 +88,24 @@ target_link_libraries(test_FIFO ${VL_FIFO})
 
 # Register a test to this target
 add_test(FIFO_FUNC test_FIFO)
+
+######################################################
+## Testing that the top level block is functional
+######################################################
+
+# Create new Target
+add_executable(test_WB_UART
+    "bench/cpp/src/verilatorCatchMain.cpp"
+    "bench/cpp/src/testUART.cpp"
+    ${VERILATED}
+    ${VERILATED_TRACE}
+)
+
+# Add a dependency to the verilator generated libraries
+add_dependencies(test_WB_UART vl_libs)
+
+# Link to the Verilator Generated static library
+target_link_libraries(test_WB_UART ${VL_WB_UART}) 
+
+# Register a test to this target
+add_test(MODULE_FUNC test_WB_UART)

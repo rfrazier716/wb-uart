@@ -9,6 +9,7 @@ if(${REBUILD_VERILATOR})
         COMMAND sh verilator_uart_rx.sh
         COMMAND sh verilator_fifo.sh
         COMMAND sh verilator_edge_detector.sh
+        COMMAND sh verilator_wb_uart.sh
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/"
     )
 

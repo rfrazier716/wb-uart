@@ -33,6 +33,7 @@ set(VL_UART_TX "${VL_OBJECT_DIR}/uart_tx/Vuart_tx__ALL.a")
 set(VL_UART_RX "${VL_OBJECT_DIR}/uart_rx/Vuart_rx__ALL.a")
 set(VL_FIFO "${VL_OBJECT_DIR}/fifo/Vfifo__ALL.a")
 set(VL_EDGE_DETECT "${VL_OBJECT_DIR}/edge_detector/Vedge_detector__ALL.a")
+set(VL_WB_UART "${VL_OBJECT_DIR}/wb_uart/Vwb_uart__ALL.a")
 
 # build the Verilator files
 INCLUDE("cmake/verilator_build.cmake")
