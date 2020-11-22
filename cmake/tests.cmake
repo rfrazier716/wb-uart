@@ -3,6 +3,28 @@
 set(TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/unittests")
 message("Building UnitTests in ${TEST_DIR}")
 
+
+######################################################
+## Testing that the Edge Detector Block is Functional
+######################################################
+
+# Create new Target
+add_executable(testEdgeDetector
+    "bench/cpp/src/verilatorCatchMain.cpp"
+    "bench/cpp/src/testEdgeDetector.cpp"
+    ${VERILATED}
+    ${VERILATED_TRACE}
+)
+
+# Add a dependency to the verilator generated libraries
+add_dependencies(testEdgeDetector vl_libs)
+
+# Link to the Verilator Generated static library
+target_link_libraries(testEdgeDetector ${VL_EDGE_DETECT}) 
+
+# Register a test to this target
+add_test(EDGE_DETECT_FUNCTIONAL testEdgeDetector)
+
 ######################################################
 ## Testing that the UART Transmit Block is Functional
 ######################################################

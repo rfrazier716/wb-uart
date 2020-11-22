@@ -44,14 +44,13 @@ module fifo#(
             end
 
             // If there's a read head advance request, output the current readhead data and advance the read head
-            // will also execute on a simultaneous RW event
-            if(i_read_w && (!o_empty_w || i_write_w)) begin 
+            if(i_read_w && !o_empty_w) begin 
                 read_head_r <= read_head_r + {{(FIFO_DEPTH-1){1'b0}},1'b1}; 
             end 
         end
     end
     //TODO: What about when you initialize the code? what is this value?
-    assign o_data_w = fifo_buffer_r[read_head_r - 1]; // The output data wire connects to the previously read value
+    assign o_data_w = fifo_buffer_r[read_head_r]; // The output data wire connects to the previously read value
     assign o_empty_w = (write_head_r == read_head_r) ? 1'b1:0; // if the read head equals the write head the FIFO is full
     assign o_full_w = (write_head_r+ 1 == read_head_r) ? 1'b1:0; //if the write head is only ahead of the Fifo by one it's empty
 
