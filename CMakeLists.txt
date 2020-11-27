@@ -38,6 +38,9 @@ set(VL_WB_UART "${VL_OBJECT_DIR}/wb_uart/Vwb_uart__ALL.a")
 # build the Verilator files
 INCLUDE("cmake/verilator_build.cmake")
 
+# build examples
+INCLUDE("cmake/examples.cmake")
+
 
 IF(${ENABLE_TESTS})
     enable_testing()
