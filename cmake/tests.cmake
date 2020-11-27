@@ -3,6 +3,17 @@
 set(TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/unittests")
 message("Building UnitTests in ${TEST_DIR}")
 
+######################################################
+## Tests for the TCP Socket
+######################################################
+
+# Create new Target
+add_executable(testTCP
+    "bench/cpp/src/testSocket.cpp"
+)
+
+# Register a test to this target
+add_test(TCP_SOCKET_FUNCTIONAL testTCP)
 
 ######################################################
 ## Testing that the Edge Detector Block is Functional
