@@ -97,6 +97,7 @@ add_test(FIFO_FUNC test_FIFO)
 add_executable(test_WB_UART
     "bench/cpp/src/verilatorCatchMain.cpp"
     "bench/cpp/src/testUART.cpp"
+    "bench/cpp/src/tcp/TCPServer.cpp"
     ${VERILATED}
     ${VERILATED_TRACE}
 )
