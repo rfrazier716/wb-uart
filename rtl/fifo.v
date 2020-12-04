@@ -53,7 +53,7 @@ module fifo#(
     //TODO: What about when you initialize the code? what is this value?
     assign o_data_w = fifo_buffer_r[read_head_r]; // The output data wire connects to the previously read value
     assign o_empty_w = (write_head_r == read_head_r) ? 1'b1:0; // if the read head equals the write head the FIFO is full
-    assign o_full_w = (write_head_r+ 1 == read_head_r) ? 1'b1:0; //if the write head is only ahead of the Fifo by one it's empty
+    assign o_full_w = ((write_head_r + {{(FIFO_DEPTH-1){1'b0}},1'b1}) == read_head_r) ? 1'b1:0; //if the write head is only ahead of the Fifo by one it's empty
     assign o_fill_bytes_w = (write_head_r - read_head_r); //The number of bytes currently in the FIFO
 
 endmodule

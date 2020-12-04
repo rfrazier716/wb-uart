@@ -54,7 +54,6 @@ add_test(EDGE_DETECT_FUNCTIONAL testEdgeDetector)
 
 # Create new Target
 add_executable(test_UARTTx
-    "bench/cpp/src/verilatorCatchMain.cpp"
     "bench/cpp/src/testUARTTx.cpp"
     ${VERILATED}
     ${VERILATED_TRACE}
@@ -65,6 +64,8 @@ add_dependencies(test_UARTTx vl_libs)
 
 # Link to the Verilator Generated static library
 target_link_libraries(test_UARTTx ${VL_UART_TX}) 
+target_link_libraries(test_UARTTx catch_main)
+
 
 # Register a test to this target
 add_test(UARTTX_FUNC test_UARTTx)
@@ -75,7 +76,6 @@ add_test(UARTTX_FUNC test_UARTTx)
 
 # Create new Target
 add_executable(test_uart_receive
-    "bench/cpp/src/verilatorCatchMain.cpp"
     "bench/cpp/src/testUARTRx.cpp"
     ${VERILATED}
     ${VERILATED_TRACE}
@@ -86,6 +86,7 @@ add_dependencies(test_uart_receive vl_libs)
 
 # Link to the Verilator Generated static library
 target_link_libraries(test_uart_receive ${VL_UART_RX}) 
+target_link_libraries(test_uart_receive catch_main) 
 
 # Register a test to this target
 add_test(UARTRX_FUNC test_uart_receive)
@@ -108,6 +109,7 @@ add_dependencies(test_FIFO vl_libs)
 
 # Link to the Verilator Generated static library
 target_link_libraries(test_FIFO ${VL_FIFO}) 
+target_link_libraries(test_FIFO catch_main) 
 
 # Register a test to this target
 add_test(FIFO_FUNC test_FIFO)
@@ -118,7 +120,6 @@ add_test(FIFO_FUNC test_FIFO)
 
 # Create new Target
 add_executable(test_WB_UART
-    "bench/cpp/src/verilatorCatchMain.cpp"
     "bench/cpp/src/testUART.cpp"
     "bench/cpp/src/tcp/TCPServer.cpp"
     ${VERILATED}
@@ -130,6 +131,7 @@ add_dependencies(test_WB_UART vl_libs)
 
 # Link to the Verilator Generated static library
 target_link_libraries(test_WB_UART ${VL_WB_UART}) 
+target_link_libraries(test_WB_UART catch_main) 
 
 # Register a test to this target
 add_test(MODULE_FUNC test_WB_UART)

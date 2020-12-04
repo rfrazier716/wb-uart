@@ -21,7 +21,12 @@ module wb_uart#(
     input wire i_rx_w,
     output wire o_tx_w, //UART bus output wire
     output wire led_tx_busy, led_rx_busy, //pins to tie to LEDs that get asserted when the UARTs are busy
-    output wire rx_fifo_full, rx_fifo_byte_available
+
+    //interrupts for telling the WB master data is available
+    //TODO: Implement these wires
+    output wire rx_fifo_byte_available, // wire asserted whenever the receiver is not empty
+    output wire rx_fifo_full, //wire is asserted when the receiver is full
+    output wire rx_linefeed_available // wire asserted when a new line is available
 );
 
 parameter FIFO_DEPTH = 8;
