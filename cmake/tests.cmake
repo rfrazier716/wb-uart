@@ -10,11 +10,29 @@ set(TEST_SOURCE_DIR "${CMAKE_SOURCE_DIR}/bench/cpp/src")
 
 
 # Build the Catch header main function into a library
-add_library(catch_main "bench/cpp/src/verilatorCatchMain.cpp")
+add_library(vl_catch_main "bench/cpp/src/verilatorCatchMain.cpp")
+add_library(catch_main "bench/cpp/src/catchMain.cpp")
 add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp")
 
 ######################################################
-## Make one large executable that are tests for the function
+## Tests related to virtual Classes etc
+######################################################
+add_executable(test_simulators
+    "${TEST_SOURCE_DIR}/testVirtualUart.cpp"
+    "${TEST_SOURCE_DIR}/VirtualUart.cpp")
+
+target_link_libraries(test_simulators catch_main)
+
+set(TEST_TAGS "[uart-tb]")
+
+foreach(tag ${TEST_TAGS})
+    catch_discover_tests(test_simulators
+        TEST_SPEC "${tag}"
+        TEST_PREFIX "${tag}-")
+endforeach()
+
+######################################################
+## All Verilog Related Tests
 ######################################################
 
 # Create new Target
@@ -42,7 +60,7 @@ target_link_libraries(test_wb_uart ${VL_LINEFEED})
 target_link_libraries(test_wb_uart ${VL_WB_UART})
 
 # Other library links
-target_link_libraries(test_wb_uart catch_main) # Catch main function -- speeds up compiling
+target_link_libraries(test_wb_uart vl_catch_main) # Catch main function -- speeds up compiling
 target_link_libraries(test_wb_uart tcp) # link the TCP library so the test bench works
 
 

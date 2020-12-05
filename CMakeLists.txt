@@ -13,7 +13,7 @@ SET(ENABLE_TESTS TRUE)
 # Do Not Edit Below This Line
 #-----------------------------------------------
 # set to cpp 11 standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Define Necessary Verilator Core Files
