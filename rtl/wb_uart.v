@@ -82,8 +82,8 @@ always@(posedge i_clk) begin
     if(wb_strobe_in && !wb_write_enable_in) begin
         case(wb_addr_in)
             32'h0: begin end // placeholder for when you can configure bus
-            32'h1: wb_data_out_r <= {{(32-FIFO_DEPTH){1'b0}}, rx_fifo_fill_w};
-            32'h2: wb_data_out_r <= {{(32-FIFO_DEPTH){1'b0}}, tx_fifo_fill_w};
+            32'h1: wb_data_out_r <= {{(32-FIFO_DEPTH){1'b0}}, rx_fifo_fill_w}; // read the RX fifo fill factor
+            32'h2: wb_data_out_r <= {{(32-FIFO_DEPTH){1'b0}}, tx_fifo_fill_w}; // read the TX fifo fill factor
             // when reading pop a byte off the rx fifo and advance the read head
             32'h11: begin
                 wb_data_out_r <= {{(32-DATA_BITS){1'b0}}, rx_fifo_data_out_w};
@@ -95,8 +95,8 @@ always@(posedge i_clk) begin
 end
 
 
-//TODO: Fix this so multiple items can be on the bus
-assign wb_data_out = wb_data_out_r; 
+// Data is presented on the bus for one clock cycle while the acknowledge flag is high
+assign wb_data_out = (wb_acknowledge_out) ? wb_data_out_r : 32'bZ; 
 
 
 ///////////////////////////////////////////////////////
@@ -182,6 +182,16 @@ uart_rx #(DATA_BITS, FIFO_DEPTH) rx(
 );
 /* verilator lint_on PINMISSING */
 
+
+/*verilator lint_off PINMISSING */
+//Linefeed Detector that asserts a flag when a newline is on the FIFO
+linefeed_detector rx_linefeed(
+    .i_clk(i_clk),
+    .i_data_latch(rx_data_ready_w),
+    .i_data(rx_fifo_data_in_w),
+    .o_linefeed(rx_linefeed_available)
+);
+/*verilator lint_on PINMISSING */
 
 //Miscellaneous connections
 assign led_tx_busy = uart_tx_busy_w;

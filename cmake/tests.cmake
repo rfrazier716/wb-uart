@@ -40,7 +40,9 @@ target_link_libraries(test_wb_uart ${VL_FIFO})
 target_link_libraries(test_wb_uart ${VL_EDGE_DETECT})
 target_link_libraries(test_wb_uart ${VL_LINEFEED})
 target_link_libraries(test_wb_uart ${VL_WB_UART})
-target_link_libraries(test_wb_uart catch_main)
+
+# Other library links
+target_link_libraries(test_wb_uart catch_main) # Catch main function -- speeds up compiling
 target_link_libraries(test_wb_uart tcp) # link the TCP library so the test bench works
 
 
