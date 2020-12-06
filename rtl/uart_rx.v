@@ -16,14 +16,14 @@ module uart_rx#(
     initial {data_r,rx_data_r} = 0; // initialize the data register to be zero
 
     //State machine registers and paramters
-    parameter ST_RECIEVE_B0 = 4'b0000; //Transmit data, bit 0
-    parameter ST_RECIEVE_B1 = 4'b0001; //Transmit data, bit 1
-    parameter ST_RECIEVE_B2 = 4'b0010; //Transmit data, bit 2
-    parameter ST_RECIEVE_B3 = 4'b0011; //Transmit data, bit 3
-    parameter ST_RECIEVE_B4 = 4'b0100; //Transmit data, bit 4
-    parameter ST_RECIEVE_B5 = 4'b0101; //Transmit data, bit 5
-    parameter ST_RECIEVE_B6 = 4'b0110; //Transmit data, bit 6
-    parameter ST_RECIEVE_B7 = 4'b0111; //Transmit data, bit 7
+    parameter ST_RECIEVE_B0 = 4'b0000; //Receive data, bit 0
+    parameter ST_RECIEVE_B1 = 4'b0001; //Receive data, bit 1
+    parameter ST_RECIEVE_B2 = 4'b0010; //Receive data, bit 2
+    parameter ST_RECIEVE_B3 = 4'b0011; //Receive data, bit 3
+    parameter ST_RECIEVE_B4 = 4'b0100; //Receive data, bit 4
+    parameter ST_RECIEVE_B5 = 4'b0101; //Receive data, bit 5
+    parameter ST_RECIEVE_B6 = 4'b0110; //Receive data, bit 6
+    parameter ST_RECIEVE_B7 = 4'b0111; //Receive data, bit 7
     parameter ST_LATCH = 4'b1001;
     parameter ST_IDLE = 4'b1010;
     parameter ST_INIT = 4'b1011;

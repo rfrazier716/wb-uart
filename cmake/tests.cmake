@@ -19,9 +19,14 @@ add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp")
 ######################################################
 add_executable(test_simulators
     "${TEST_SOURCE_DIR}/testVirtualUart.cpp"
-    "${TEST_SOURCE_DIR}/VirtualUart.cpp")
+    ${VERILATED}
+    ${VERILATED_TRACE})
 
-target_link_libraries(test_simulators catch_main)
+# use the verilator uartTx and Rx modules for testing
+add_dependencies(test_simulators vl_libs)
+target_link_libraries(test_simulators ${VL_UART_TX})
+target_link_libraries(test_simulators ${VL_UART_RX})
+target_link_libraries(test_simulators vl_catch_main)
 
 set(TEST_TAGS "[uart-tb]")
 
