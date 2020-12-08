@@ -79,7 +79,7 @@ always@(posedge i_clk) begin
     end
 
     //Handling Read Requests
-    if(wb_strobe_in && !wb_write_enable_in) begin
+    if(wb_strobe_in && (!wb_write_enable_in)) begin
         case(wb_addr_in)
             32'h0: begin end // placeholder for when you can configure bus
             32'h1: wb_data_out_r <= {{(32-FIFO_DEPTH){1'b0}}, rx_fifo_fill_w}; // read the RX fifo fill factor
@@ -90,13 +90,14 @@ always@(posedge i_clk) begin
                 rx_fifo_read_r <= 1; // advance the rx fifo read head
             end
             32'h12: wb_data_out_r <= 32'b0; //if trying to read from the TX register return zero
+            default: begin end // default case
         endcase
     end
 end
 
 
 // Data is presented on the bus for one clock cycle while the acknowledge flag is high
-assign wb_data_out = (wb_acknowledge_out) ? wb_data_out_r : 32'bZ; 
+assign wb_data_out = (wb_acknowledge_out==1'b1) ? wb_data_out_r : 32'hZZZZZZZZ;
 
 
 ///////////////////////////////////////////////////////
