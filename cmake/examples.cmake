@@ -3,7 +3,12 @@
 ######################################################
 
 # Create new Target
-add_executable(echoServer
-    "bench/cpp/src/echoServer.cpp"
-    "bench/cpp/src/tcp/TCPServer.cpp"
+add_executable(helloUart
+    "bench/cpp/src/examples/helloUart.cpp"
+    ${VERILATED}
+    ${VERILATED_TRACE}
 )
+
+# link to the verilator library
+set(VL_HELLO_UART "${VL_OBJECT_DIR}/hello_uart/Vhello_uart__ALL.a")
+target_link_libraries(helloUart ${VL_HELLO_UART})
