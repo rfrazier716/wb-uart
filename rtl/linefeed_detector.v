@@ -35,4 +35,4 @@ edge_detector linefeed_edge_detector(
     );
 /* verilator lint_on PINMISSING */
 
-endmodule;
+endmodule

@@ -174,7 +174,7 @@ fifo #(DATA_BITS, FIFO_DEPTH) rx_fifo(
 /* verilator lint_on PINMISSING */
 
 /* verilator lint_off PINMISSING */
-uart_rx #(DATA_BITS, FIFO_DEPTH) rx(
+uart_rx #(DATA_BITS, CYCLES_PER_BIT) rx(
     .i_clk(i_clk),
     .i_rx_w(i_rx_w),
     .o_busy(uart_rx_busy_w),
@@ -199,4 +199,4 @@ assign led_tx_busy = uart_tx_busy_w;
 assign led_rx_busy = uart_rx_busy_w;
 assign rx_fifo_byte_available = !rx_fifo_empty; //If the fifo is not empty there's a byte available to be read
 
-endmodule;
+endmodule
