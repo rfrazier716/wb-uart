@@ -9,7 +9,7 @@ module uart_rx#(
     input wire i_rx_w, // the data that will be latched and transmitted
     output wire o_busy, //signal that's asserted when the state machine is not in idle
     output reg o_data_ready_w, //signal that's asserted when new data has been latched to the data register (only one for one clock cycle)
-    output reg[DATA_BITS-1:0] o_data_w //the most recently recieved complete data byte
+    output wire[DATA_BITS-1:0] o_data_w //the most recently recieved complete data byte
 );
     reg[DATA_BITS-1:0] data_r; // Data that was recieved
     reg[DATA_BITS-1:0] rx_data_r; //Register that gets written to as data comes in
