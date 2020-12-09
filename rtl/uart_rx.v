@@ -35,7 +35,7 @@ module uart_rx#(
 
     reg [7:0] baud_counter_r; //counter to trigger state machine 
     //initialize baud counter to the idle value
-    initial baud_counter_r =  CYCLES_PER_BIT[7:0]+(CYCLES_PER_BIT[7:0]>>1)-1;
+    initial baud_counter_r =  CYCLES_PER_BIT[7:0]+(CYCLES_PER_BIT[7:0]>>1)-1'b1;
 
     //State Machine to drive the UART transmitter
     always@(posedge i_clk) begin
