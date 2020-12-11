@@ -22,6 +22,10 @@ set(VERILATED "${VERILATOR_INCLUDE}/verilated.cpp")
 set(VERILATED_TRACE "${VERILATOR_INCLUDE}/verilated_vcd_c.cpp")
 set(VL_OBJECT_DIR "${CMAKE_SOURCE_DIR}/verilator/obj_dir")
 
+# Find the Verilator package 
+find_package(verilator HINTS $ENV{VERILATOR_ROOT})
+set(RTL "${CMAKE_SOURCE_DIR}/rtl")
+
 # Add the Verilator Include path to the include search directory
 include_directories(
     "${VERILATOR_INCLUDE}"                      # verilator core files
@@ -29,15 +33,7 @@ include_directories(
     "${CMAKE_SOURCE_DIR}/bench/cpp")            # include directory for testbench
 
 ## Generates the verilator object files needed to run simulations and tests
-set(VL_UART_TX "${VL_OBJECT_DIR}/uart_tx/Vuart_tx__ALL.a")
-set(VL_UART_RX "${VL_OBJECT_DIR}/uart_rx/Vuart_rx__ALL.a")
-set(VL_FIFO "${VL_OBJECT_DIR}/fifo/Vfifo__ALL.a")
-set(VL_EDGE_DETECT "${VL_OBJECT_DIR}/edge_detector/Vedge_detector__ALL.a")
-set(VL_LINEFEED "${VL_OBJECT_DIR}/linefeed_detector/Vlinefeed_detector__ALL.a")
-set(VL_WB_UART "${VL_OBJECT_DIR}/wb_uart/Vwb_uart__ALL.a")
 
-# build the Verilator files
-INCLUDE("cmake/verilator_build.cmake")
 
 # build examples
 INCLUDE("cmake/examples.cmake")

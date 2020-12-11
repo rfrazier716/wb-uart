@@ -19,14 +19,23 @@ add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp")
 ######################################################
 add_executable(test_simulators
     "${TEST_SOURCE_DIR}/testVirtualUart.cpp"
-    ${VERILATED}
-    ${VERILATED_TRACE})
+    )
+
+# Link it to the VLCatch Main library
+target_link_libraries(test_simulators PUBLIC vl_catch_main)
 
 # use the verilator uartTx and Rx modules for testing
-add_dependencies(test_simulators vl_libs)
-target_link_libraries(test_simulators ${VL_UART_TX})
-target_link_libraries(test_simulators ${VL_UART_RX})
-target_link_libraries(test_simulators vl_catch_main)
+verilate(test_simulators SOURCES "${RTL}/uart_tx.v"
+    TRACE 
+    INCLUDE_DIRS ${RTL}
+    VERILATOR_ARGS "-GCYCLES_PER_BIT=8"
+    )
+
+verilate(test_simulators SOURCES "${RTL}/uart_rx.v"
+    TRACE 
+    INCLUDE_DIRS ${RTL}
+    VERILATOR_ARGS "-GCYCLES_PER_BIT=8"
+    )
 
 set(TEST_TAGS "[uart-tb]")
 
@@ -48,25 +57,20 @@ add_executable(test_wb_uart
     "${TEST_SOURCE_DIR}/testUART.cpp"
     "${TEST_SOURCE_DIR}/testUARTRx.cpp"
     "${TEST_SOURCE_DIR}/testUARTTx.cpp"
-    ${VERILATED}
-    ${VERILATED_TRACE}
 )
 
-# Add a dependency to the verilator generated libraries
-add_dependencies(test_wb_uart vl_libs)
-
-# Link to the Verilator Generated static libraries
-target_link_libraries(test_wb_uart ${VL_LINEFEED}) 
-target_link_libraries(test_wb_uart ${VL_UART_TX})
-target_link_libraries(test_wb_uart ${VL_UART_RX})
-target_link_libraries(test_wb_uart ${VL_FIFO})
-target_link_libraries(test_wb_uart ${VL_EDGE_DETECT})
-target_link_libraries(test_wb_uart ${VL_LINEFEED})
-target_link_libraries(test_wb_uart ${VL_WB_UART})
+# Verilate the required top level modules and linke to executable
+verilate(test_wb_uart SOURCES "${RTL}/linefeed_detector.v" TRACE INCLUDE_DIRS ${RTL})
+verilate(test_wb_uart SOURCES "${RTL}/uart_tx.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
+verilate(test_wb_uart SOURCES "${RTL}/uart_rx.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
+verilate(test_wb_uart SOURCES "${RTL}/linefeed_detector.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS)
+verilate(test_wb_uart SOURCES "${RTL}/fifo.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GFIFO_DEPTH=3")
+verilate(test_wb_uart SOURCES "${RTL}/edge_detector.v" TRACE INCLUDE_DIRS ${RTL})
+verilate(test_wb_uart SOURCES "${RTL}/wb_uart.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
 
 # Other library links
-target_link_libraries(test_wb_uart vl_catch_main) # Catch main function -- speeds up compiling
-target_link_libraries(test_wb_uart tcp) # link the TCP library so the test bench works
+target_link_libraries(test_wb_uart PUBLIC vl_catch_main) # Catch main function -- speeds up compiling
+target_link_libraries(test_wb_uart PUBLIC tcp) # link the TCP library so the test bench works
 
 
 ######################################################

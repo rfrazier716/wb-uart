@@ -5,10 +5,11 @@
 # Create new Target
 add_executable(helloUart
     "bench/cpp/src/examples/helloUart.cpp"
-    ${VERILATED}
-    ${VERILATED_TRACE}
 )
 
-# link to the verilator library
-set(VL_HELLO_UART "${VL_OBJECT_DIR}/hello_uart/Vhello_uart__ALL.a")
-target_link_libraries(helloUart ${VL_HELLO_UART})
+# verilate the top level module
+verilate(helloUart SOURCES "bench/verilog/hello_uart.v"
+    TRACE 
+    INCLUDE_DIRS ${RTL}
+    DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/obj_dir/hello_uart"
+    )
