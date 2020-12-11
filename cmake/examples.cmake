@@ -8,8 +8,6 @@ add_executable(helloUart
 )
 
 # verilate the top level module
-verilate(helloUart SOURCES "bench/verilog/hello_uart.v"
-    TRACE 
-    INCLUDE_DIRS ${RTL}
-    DIRECTORY "${CMAKE_SOURCE_DIR}/verilator/obj_dir/hello_uart"
+verilate(helloUart SOURCES "bench/verilog/hello_uart.v" TRACE INCLUDE_DIRS ${RTL} 
+    VERILATOR_ARGS "-GCYCLES_PER_BIT=8" "-GCOUNTER_VALUE=100"
     )
