@@ -6,9 +6,11 @@ module wb_uart#(
     parameter CYCLES_PER_BIT = 108 //Gives a 460.8kBaud on a 50Mhz clock
 )
 (
+    //# {{clocks|Clocking}}
     input wire i_clk,
     
     //Wishbone Bus interface
+    //# {{control|Wishbone Bus}}
     input wire[31:0] wb_addr_in,
     input wire[31:0] wb_data_in,
     output wire[31:0] wb_data_out,
@@ -17,13 +19,14 @@ module wb_uart#(
     output reg wb_acknowledge_out,
 
 
-    //UART interface 
+    //# {{Uart Interface}}
     input wire i_rx_w,
     output wire o_tx_w, //UART bus output wire
     output wire led_tx_busy, led_rx_busy, //pins to tie to LEDs that get asserted when the UARTs are busy
 
     //interrupts for telling the WB master data is available
     //TODO: Implement these wires
+    //# {{Interrupts}}
     output wire rx_fifo_byte_available, // wire asserted whenever the receiver is not empty
     output wire rx_fifo_full, //wire is asserted when the receiver is full
     output wire rx_linefeed_available // wire asserted when a new line is available
