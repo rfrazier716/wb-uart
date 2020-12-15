@@ -1,3 +1,15 @@
+/*@Module 
+Use the @module tag to identify a block comment that's describing the module
+The first multiline string is taken as a module description
+a newline will
+
+
+:input <symbol>: Descrption for symbol
+:input <symbol>: descrption for symbol here too
+
+:output <symbol>: description of teh module
+*/
+
 `default_nettype none //flags an error if you haven't defined a wire
 
 
