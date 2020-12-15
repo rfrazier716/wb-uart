@@ -73,10 +73,7 @@ target_link_libraries(test_wb_uart PUBLIC vl_catch_main) # Catch main function -
 target_link_libraries(test_wb_uart PUBLIC tcp) # link the TCP library so the test bench works
 
 
-######################################################
-## Have Catch find and register tests based on tags
-######################################################
-
+# Have Catch find and register tests based on tags
 set(TEST_TAGS "[fifo]"
     "[linefeed]"
     "[uart-tx]"
@@ -89,3 +86,22 @@ foreach(tag ${TEST_TAGS})
         TEST_SPEC "${tag}"
         TEST_PREFIX "${tag}-")
 endforeach()
+
+######################################################
+## Tests for Example Modules
+######################################################
+# Create new Target
+add_executable(test_example_cores
+    "${TEST_SOURCE_DIR}/testEcho.cpp"
+)
+
+# generate verilator libraries
+set(EXAMPLE_MODULE_DIR "${CMAKE_SOURCE_DIR}/bench/verilog")
+verilate(test_example_cores SOURCES "${EXAMPLE_MODULE_DIR}/uart_echo.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=12")
+
+target_link_libraries(test_example_cores PUBLIC vl_catch_main) # Catch main function -- speeds up compiling
+
+# register tests with the "example" prefix
+catch_discover_tests(test_example_cores
+        TEST_SPEC "[examples]"
+        TEST_PREFIX "[examples]-")
