@@ -18,6 +18,7 @@ module uart_echo#(
 
 //wire that acts as an interrupt for when to read the UART
 wire rx_fifo_byte_available;
+wire rx_linefeed_availabile;
 
 //State machine parameters for receiving a byte
 localparam ST_RXREQUEST = 8'h0; //sending a read request to the UART
@@ -32,13 +33,14 @@ initial system_state_r = ST_IDLE;
 
 //internal register settings for managing wishbone bus
 reg[31:0] wb_data_out_r,
-    wb_address_out_r,
-    wb_data_in_r;
+    wb_address_out_r;
+	 
+wire[31:0] wb_data_in_r;
 
-reg wb_write_enable_out,
-    wb_strobe_out;
+reg wb_write_enable_out;
+wire wb_strobe_out;
 
-initial {wb_data_out_r,wb_address_out_r, wb_data_in_r, wb_write_enable_out, wb_strobe_out} = 0;
+initial {wb_data_out_r,wb_address_out_r, wb_write_enable_out} = 0;
 
 
 // State machine to read data off the UART and echo it back to the transmitter
@@ -63,7 +65,7 @@ always@(posedge i_clk) begin
             // to read
             system_state_r <= (rx_fifo_byte_available) ? ST_RXREQUEST : ST_IDLE;
         end
-        //if idle, stay in idle unless the interrupt wire is asserted
+        //if idle, stay in idle unless the interrupt wire is asserted, then read all the data off the fifo
         ST_IDLE: system_state_r <= (rx_fifo_byte_available) ? ST_RXREQUEST : ST_IDLE;
         default: begin end
     endcase
@@ -90,7 +92,8 @@ wb_uart#(8, CYCLES_PER_BIT) uart(
     .led_rx_busy(led_rx_busy),
 
     //Interrupt Signals
-    .rx_fifo_byte_available(rx_fifo_byte_available)
+    .rx_fifo_byte_available(rx_fifo_byte_available),
+    .rx_linefeed_available(rx_linefeed_availabile)
 
 );
 /* verilator lint_on PINMISSING*/
