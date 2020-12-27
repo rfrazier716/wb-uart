@@ -52,6 +52,7 @@ endforeach()
 # Create new Target
 add_executable(test_wb_uart
     "${TEST_SOURCE_DIR}/testEdgeDetector.cpp"
+    "${TEST_SOURCE_DIR}/testCharDetector.cpp"
     "${TEST_SOURCE_DIR}/testFifo.cpp"
     "${TEST_SOURCE_DIR}/testLinefeed.cpp"
     "${TEST_SOURCE_DIR}/testUART.cpp"
@@ -64,6 +65,7 @@ verilate(test_wb_uart SOURCES "${RTL}/linefeed_detector.v" TRACE INCLUDE_DIRS ${
 verilate(test_wb_uart SOURCES "${RTL}/uart_tx.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
 verilate(test_wb_uart SOURCES "${RTL}/uart_rx.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
 verilate(test_wb_uart SOURCES "${RTL}/linefeed_detector.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS)
+verilate(test_wb_uart SOURCES "${RTL}/char_detector.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GSEARCH_KEY=8'h0D")
 verilate(test_wb_uart SOURCES "${RTL}/fifo.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GFIFO_DEPTH=3")
 verilate(test_wb_uart SOURCES "${RTL}/edge_detector.v" TRACE INCLUDE_DIRS ${RTL})
 verilate(test_wb_uart SOURCES "${RTL}/wb_uart.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=8")
@@ -79,7 +81,8 @@ set(TEST_TAGS "[fifo]"
     "[uart-tx]"
     "[uart-rx]"
     "[uart-top]"
-    "[edge-detect]")
+    "[edge-detect]"
+    "[char-detect]")
 
 foreach(tag ${TEST_TAGS})
     catch_discover_tests(test_wb_uart
