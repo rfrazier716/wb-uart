@@ -189,11 +189,11 @@ uart_rx #(DATA_BITS, CYCLES_PER_BIT) rx(
 
 /*verilator lint_off PINMISSING */
 //Linefeed Detector that asserts a flag when a newline is on the FIFO
-linefeed_detector rx_linefeed(
+char_detector#(.SEARCH_KEY(8'h0D)) rx_linefeed(
     .i_clk(i_clk),
     .i_data_latch(rx_data_ready_w),
     .i_data(rx_fifo_data_in_w),
-    .o_linefeed(rx_linefeed_available)
+    .o_char_in_buffer(rx_linefeed_available)
 );
 /*verilator lint_on PINMISSING */
 
