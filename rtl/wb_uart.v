@@ -191,6 +191,7 @@ uart_rx #(DATA_BITS, CYCLES_PER_BIT) rx(
 //Linefeed Detector that asserts a flag when a newline is on the FIFO
 char_detector#(.SEARCH_KEY(8'h0D)) rx_linefeed(
     .i_clk(i_clk),
+    .i_reset(rx_fifo_read_r), //This interrupt is reset whenever the fifo is read
     .i_data_latch(rx_data_ready_w),
     .i_data(rx_fifo_data_in_w),
     .o_char_in_buffer(rx_linefeed_available)
