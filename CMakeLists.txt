@@ -4,11 +4,14 @@ project ("wb-uart")
 # Uncomment to build Test files
 SET(ENABLE_TESTS TRUE)
 
-# set to cpp 11 standard
+# set to cpp 14 standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Define Necessary Verilator Core Files
+# Find the Boost Library Installation
+find_package(Boost REQUIRED COMPONENTS system)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 # Find the Verilator Package and add necessary Definitions
 find_package(verilator HINTS $ENV{VERILATOR_ROOT})

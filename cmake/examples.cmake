@@ -11,3 +11,18 @@ add_executable(helloUart
 verilate(helloUart SOURCES "bench/verilog/hello_uart.v" TRACE INCLUDE_DIRS ${RTL} 
     VERILATOR_ARGS "-GCYCLES_PER_BIT=8" "-GCOUNTER_VALUE=100"
     )
+
+add_executable(TCPEcho
+    "bench/cpp/src/examples/uartEcho.cpp"
+)
+
+# Link to the boost and PThread Library
+target_link_libraries(TCPEcho PUBLIC
+    ${Boost_LIBRARIES} 
+    Threads::Threads
+    )
+
+# verilate the top level module
+verilate(TCPEcho SOURCES "bench/verilog/hello_uart.v" TRACE INCLUDE_DIRS ${RTL} 
+    VERILATOR_ARGS "-GCYCLES_PER_BIT=32" "-GCOUNTER_VALUE=100"
+    )
