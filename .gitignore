@@ -38,9 +38,13 @@
 # VSCode project settings
 /.vscode
 
+# CLion Project Settngs
+/.idea/
+
 # Verilator Generated Object Files
 /verilator/obj_dir/*
 
 # Quartus Synthesis and Project Files
 /synth/
+*.bak
 
