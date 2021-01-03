@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.10)
 project ("wb-uart")
 
+# Set the build directory to be ./build
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
+
 # Uncomment to build Test files
 SET(ENABLE_TESTS TRUE)
 

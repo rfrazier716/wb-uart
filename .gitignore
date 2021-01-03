@@ -31,8 +31,9 @@
 *.out
 *.app
 
-# Build Directory 
+# Build Directories
 /build/
+*build*/
 
 # VSCode project settings
 /.vscode
@@ -42,3 +43,4 @@
 
 # Quartus Synthesis and Project Files
 /synth/
+
