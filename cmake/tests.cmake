@@ -12,7 +12,35 @@ set(TEST_SOURCE_DIR "${CMAKE_SOURCE_DIR}/bench/cpp/src")
 # Build the Catch header main function into a library
 add_library(vl_catch_main "bench/cpp/src/verilatorCatchMain.cpp")
 add_library(catch_main "bench/cpp/src/catchMain.cpp")
-add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp")
+add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp"  "${TEST_SOURCE_DIR}/tcp/TCPConnection.cpp")
+target_link_libraries(tcp PUBLIC Threads::Threads)
+
+######################################################
+## Tests related to Testbenches
+######################################################
+add_executable(test_testbenches
+    "${TEST_SOURCE_DIR}/testTCPTestBench.cpp"
+    )
+
+# Link it to the VLCatch Main library
+target_link_libraries(test_testbenches PUBLIC vl_catch_main)
+
+# Link to the boost and PThread Library
+target_link_libraries(test_testbenches PUBLIC
+    tcp
+    ${Boost_LIBRARIES}
+    )
+
+# use the verilator UART module for testing
+verilate(test_testbenches SOURCES "${RTL}/wb_uart.v" TRACE INCLUDE_DIRS ${RTL} VERILATOR_ARGS "-GCYCLES_PER_BIT=12")
+
+set(TEST_TAGS "[test-bench]")
+
+foreach(tag ${TEST_TAGS})
+    catch_discover_tests(test_testbenches
+        TEST_SPEC "${tag}"
+        TEST_PREFIX "${tag}-")
+endforeach()
 
 ######################################################
 ## Tests related to virtual Classes etc
