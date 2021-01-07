@@ -12,7 +12,7 @@ set(TEST_SOURCE_DIR "${CMAKE_SOURCE_DIR}/bench/cpp/src")
 # Build the Catch header main function into a library
 add_library(vl_catch_main "bench/cpp/src/verilatorCatchMain.cpp")
 add_library(catch_main "bench/cpp/src/catchMain.cpp")
-add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp"  "${TEST_SOURCE_DIR}/tcp/TCPConnection.cpp")
+add_library(tcp "${TEST_SOURCE_DIR}/tcp/TCPServer.cpp"  "${TEST_SOURCE_DIR}/tcp/TCPConnection.cpp" "${TEST_SOURCE_DIR}/tcp/UDPServer.cpp")
 target_link_libraries(tcp PUBLIC Threads::Threads)
 
 ######################################################
